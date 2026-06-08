@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitVision AI - AI-Powered Virtual Fashion Try-On</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-eye"></i>
+                <div>
+                    <h1>FitVision AI</h1>
+                    <span class="tagline">AI-Powered Fashion Intelligence Platform</span>
+                </div>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn active-nav" data-section="tryon"><i class="fas fa-camera"></i> Virtual Try-On</button>
+                <button class="nav-btn" data-section="recommendations"><i class="fas fa-wand-magic-sparkles"></i> AI Stylist</button>
+                <button class="nav-btn" data-section="manufacturer"><i class="fas fa-industry"></i> For Brands</button>
+                <button class="nav-btn" data-section="profile"><i class="fas fa-user"></i> My Profile</button>
+                <button class="nav-btn logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Info Banner -->
+    <div class="welcome-banner" id="infoBanner">
+        <div class="container">
+            <div class="tip-content">
+                <i class="fas fa-sparkles"></i>
+                <p><strong>Welcome to FitVision AI!</strong> Enable your camera or upload a photo — our AI detects your body shape and applies outfits in real time. Click any outfit to try it on instantly!</p>
+                <button class="close-tip" id="closeBanner"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== SECTION: VIRTUAL TRY-ON ===================== -->
+    <section id="section-tryon" class="page-section active-section">
+        <div class="main-container">
+
+            <!-- Left Panel -->
+            <div class="left-panel">
+
+                <!-- Virtual Mirror -->
+                <div class="camera-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-mirror"></i> Virtual Mirror</h2>
+                        <div class="ai-status" id="aiStatus">
+                            <span class="ai-dot"></span> AI Ready
+                        </div>
+                    </div>
+
+                    <div class="camera-container" id="cameraContainer">
+                        <video id="cameraFeed" class="camera-feed" playsinline autoplay muted></video>
+                        <canvas id="photoCanvas" class="camera-feed" style="display:none;"></canvas>
+
+                        <!-- Body Detection Overlay -->
+                        <div class="body-detection-overlay" id="bodyDetectionOverlay" style="display:none;">
+                            <div class="scan-line" id="scanLine"></div>
+                            <div class="detection-points">
+                                <div class="det-point" style="top:12%;left:47%;" title="Head"></div>
+                                <div class="det-point" style="top:22%;left:30%;" title="Left Shoulder"></div>
+                                <div class="det-point" style="top:22%;left:64%;" title="Right Shoulder"></div>
+                                <div class="det-point" style="top:38%;left:47%;" title="Waist"></div>
+                                <div class="det-point" style="top:52%;left:35%;" title="Left Hip"></div>
+                                <div class="det-point" style="top:52%;left:59%;" title="Right Hip"></div>
+                                <div class="det-point" style="top:72%;left:40%;" title="Left Knee"></div>
+                                <div class="det-point" style="top:72%;left:54%;" title="Right Knee"></div>
+                            </div>
+                            <svg class="skeleton-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <line x1="47" y1="12" x2="30" y2="22" class="skel-line"/>
+                                <line x1="47" y1="12" x2="64" y2="22" class="skel-line"/>
+                                <line x1="47" y1="22" x2="47" y2="38" class="skel-line"/>
+                                <line x1="30" y1="22" x2="35" y2="52" class="skel-line"/>
+                                <line x1="64" y1="22" x2="59" y2="52" class="skel-line"/>
+                                <line x1="35" y1="52" x2="40" y2="72" class="skel-line"/>
+                                <line x1="59" y1="52" x2="54" y2="72" class="skel-line"/>
+                            </svg>
+                            <div class="scan-badge">
+                                <i class="fas fa-robot"></i> AI Body Detection Active
+                            </div>
+                        </div>
+
+                        <!-- Outfit Overlay on Mirror -->
+                        <div class="outfit-on-mirror" id="outfitOnMirror" style="display:none;">
+                            <img id="mirrorOutfitImg" src="" alt="Try-On Outfit">
+                        </div>
+
+                        <!-- Placeholder -->
+                        <div class="placeholder-content" id="mirrorPlaceholder">
+                            <div class="placeholder-inner">
+                                <i class="fas fa-person"></i>
+                                <p>Your Virtual Mirror</p>
+                                <small>Start camera or upload a photo to begin</small>
+                                <div class="placeholder-steps">
+                                    <div class="p-step"><span>1</span> Enable Camera / Upload</div>
+                                    <div class="p-step"><span>2</span> AI Detects Your Body</div>
+                                    <div class="p-step"><span>3</span> Try On Any Outfit Instantly</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selected outfit badge -->
+                        <div class="outfit-badge" id="outfitBadge" style="display:none;">
+                            <i class="fas fa-shirt"></i> <span id="outfitBadgeName"></span>
+                        </div>
+                    </div>
+
+                    <div class="camera-controls">
+                        <button id="toggleCamera" class="btn btn-primary">
+                            <i class="fas fa-camera"></i> Start Camera
+                        </button>
+                        <button id="uploadPhoto" class="btn btn-secondary">
+                            <i class="fas fa-upload"></i> Upload Photo
+                        </button>
+                        <input type="file" id="photoInput" accept="image/*" style="display:none;">
+                        <button id="captureSnapshot" class="btn btn-secondary" style="display:none;">
+                            <i class="fas fa-download"></i> Save Look
+                        </button>
+                        <button id="compareBtn" class="btn btn-secondary">
+                            <i class="fas fa-code-compare"></i> Compare
+                        </button>
+                    </div>
+                </div>
+
+                <!-- AI Style Score -->
+                <div class="style-score-card">
+                    <div class="score-header">
+                        <h3><i class="fas fa-star"></i> AI Style Score</h3>
+                        <div class="score-overall-badge" id="overallBadge">88</div>
+                    </div>
+                    <div class="score-container">
+                        <div class="score-item">
+                            <div class="score-label-row">
+                                <span><i class="fas fa-ruler-combined"></i> Fit Quality</span>
+                                <span class="score-val" id="fitScore">85%</span>
+                            </div>
+                            <div class="score-bar"><div class="score-fill" id="fitBar" style="width:85%"></div></div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label-row">
+                                <span><i class="fas fa-fire"></i> Trend Match</span>
+                                <span class="score-val" id="trendScore">92%</span>
+                            </div>
+                            <div class="score-bar"><div class="score-fill" id="trendBar" style="width:92%"></div></div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label-row">
+                                <span><i class="fas fa-palette"></i> Style Match</span>
+                                <span class="score-val" id="styleScore">88%</span>
+                            </div>
+                            <div class="score-bar"><div class="score-fill" id="styleBar" style="width:88%"></div></div>
+                        </div>
+                        <div class="score-item">
+                            <div class="score-label-row">
+                                <span><i class="fas fa-calendar"></i> Occasion Fit</span>
+                                <span class="score-val" id="occasionScore">90%</span>
+                            </div>
+                            <div class="score-bar"><div class="score-fill" id="occasionBar" style="width:90%"></div></div>
+                        </div>
+                    </div>
+                    <div class="score-verdict" id="scoreVerdict">
+                        <i class="fas fa-trophy"></i> Excellent Choice!
+                    </div>
+                </div>
+
+                <!-- Body Profile -->
+                <div class="body-profile-card" id="bodyProfileCard">
+                    <div class="card-header-row">
+                        <h3><i class="fas fa-person-rays"></i> Body Profile</h3>
+                        <span class="chip chip-purple">AI Detected</span>
+                    </div>
+                    <div class="body-profile-grid">
+                        <div class="profile-field">
+                            <label>Body Shape</label>
+                            <select class="profile-select" id="bodyShape">
+                                <option>Hourglass</option>
+                                <option>Rectangle</option>
+                                <option>Pear</option>
+                                <option>Apple</option>
+                                <option>Inverted Triangle</option>
+                            </select>
+                        </div>
+                        <div class="profile-field">
+                            <label>Height</label>
+                            <select class="profile-select">
+                                <option>Petite (under 5'4")</option>
+                                <option selected>Average (5'4"–5'7")</option>
+                                <option>Tall (5'7"+)</option>
+                            </select>
+                        </div>
+                        <div class="profile-field">
+                            <label>Style Preference</label>
+                            <select class="profile-select">
+                                <option>Casual</option>
+                                <option>Formal</option>
+                                <option>Streetwear</option>
+                                <option>Bohemian</option>
+                                <option>Minimalist</option>
+                            </select>
+                        </div>
+                        <div class="profile-field">
+                            <label>Occasion</label>
+                            <select class="profile-select">
+                                <option>Daily Wear</option>
+                                <option>Office</option>
+                                <option>Party</option>
+                                <option>Wedding</option>
+                                <option>Sports</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-full" id="getAiSuggestions">
+                        <i class="fas fa-wand-magic-sparkles"></i> Get AI Outfit Suggestions
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="right-panel">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="catalog"><i class="fas fa-shopping-bag"></i> Catalog</button>
+                    <button class="tab-btn" data-tab="ai-pick"><i class="fas fa-wand-magic-sparkles"></i> AI Pick</button>
+                    <button class="tab-btn" data-tab="customize"><i class="fas fa-palette"></i> Customize</button>
+                    <button class="tab-btn" data-tab="mix-match"><i class="fas fa-layer-group"></i> Mix & Match</button>
+                </div>
+
+                <div class="tab-content">
+
+                    <!-- CATALOG TAB -->
+                    <div id="catalog" class="tab-pane active">
+                        <div class="filter-bar">
+                            <div class="search-wrap">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchInput" placeholder="Search outfits..." class="search-input">
+                            </div>
+                            <select class="filter-select" id="categoryFilter">
+                                <option value="">All Categories</option>
+                                <option value="casual">Casual</option>
+                                <option value="formal">Formal</option>
+                                <option value="sports">Sports</option>
+                                <option value="party">Party</option>
+                            </select>
+                            <select class="filter-select" id="seasonFilter">
+                                <option value="">All Seasons</option>
+                                <option value="summer">Summer</option>
+                                <option value="winter">Winter</option>
+                                <option value="spring">Spring</option>
+                            </select>
+                        </div>
+                        <div class="clothing-grid" id="catalogGrid"></div>
+                    </div>
+
+                    <!-- AI PICK TAB -->
+                    <div id="ai-pick" class="tab-pane">
+                        <div class="ai-pick-header">
+                            <div>
+                                <h3><i class="fas fa-robot"></i> AI Outfit Recommendations</h3>
+                                <p class="tab-desc">Based on your body shape, trends, occasion & weather</p>
+                            </div>
+                            <button class="btn btn-small btn-primary" id="refreshRecs">
+                                <i class="fas fa-rotate"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="ai-factors">
+                            <div class="factor-chip"><i class="fas fa-sun"></i> Sunny 24°C</div>
+                            <div class="factor-chip"><i class="fas fa-fire"></i> Trending Now</div>
+                            <div class="factor-chip"><i class="fas fa-person-rays"></i> Hourglass</div>
+                            <div class="factor-chip"><i class="fas fa-calendar-day"></i> Casual Day</div>
+                        </div>
+                        <div class="outfit-comparison" id="recommendationGrid"></div>
+                    </div>
+
+                    <!-- CUSTOMIZE TAB -->
+                    <div id="customize" class="tab-pane">
+                        <h3><i class="fas fa-palette"></i> Customize Outfit</h3>
+                        <p class="tab-desc">Changes apply in real-time on your mirror preview</p>
+                        <div class="customize-options">
+                            <div class="customize-item">
+                                <label><i class="fas fa-droplet"></i> Color</label>
+                                <div class="color-picker">
+                                    <span class="color-swatch selected" style="background:#1a1a2e;" data-color="0" title="Midnight Black"></span>
+                                    <span class="color-swatch" style="background:#FF6B6B;" data-color="0" title="Coral Red"></span>
+                                    <span class="color-swatch" style="background:#4ECDC4;" data-color="180" title="Ocean Teal"></span>
+                                    <span class="color-swatch" style="background:#FFE66D;" data-color="60" title="Sunlight"></span>
+                                    <span class="color-swatch" style="background:#95E1D3;" data-color="150" title="Mint Fresh"></span>
+                                    <span class="color-swatch" style="background:#6C63FF;" data-color="270" title="Royal Purple"></span>
+                                    <span class="color-swatch" style="background:#F8B400;" data-color="45" title="Gold"></span>
+                                    <span class="color-swatch" style="background:#2D6A4F;" data-color="120" title="Forest Green"></span>
+                                </div>
+                            </div>
+                            <div class="customize-item">
+                                <label><i class="fas fa-shapes"></i> Pattern</label>
+                                <div class="pattern-grid">
+                                    <div class="pattern-card active-pattern" data-pattern="solid">
+                                        <div class="pattern-preview solid-prev"></div><span>Solid</span>
+                                    </div>
+                                    <div class="pattern-card" data-pattern="stripe">
+                                        <div class="pattern-preview stripe-prev"></div><span>Stripes</span>
+                                    </div>
+                                    <div class="pattern-card" data-pattern="plaid">
+                                        <div class="pattern-preview plaid-prev"></div><span>Plaid</span>
+                                    </div>
+                                    <div class="pattern-card" data-pattern="floral">
+                                        <div class="pattern-preview floral-prev"></div><span>Floral</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="customize-row">
+                                <div class="customize-item">
+                                    <label><i class="fas fa-shirt"></i> Fabric</label>
+                                    <select class="filter-select">
+                                        <option>Cotton</option><option>Silk</option>
+                                        <option>Linen</option><option>Denim</option><option>Wool</option>
+                                    </select>
+                                </div>
+                                <div class="customize-item">
+                                    <label><i class="fas fa-hand"></i> Sleeves</label>
+                                    <select class="filter-select">
+                                        <option>Short</option><option>Long</option>
+                                        <option>Sleeveless</option><option>Tank</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="customize-item">
+                                <label><i class="fas fa-font"></i> Add Text / Logo</label>
+                                <input type="text" placeholder="Enter custom text..." class="text-input" id="customText">
+                                <div class="embroidery-options">
+                                    <span class="emb-chip active-emb">Chest Left</span>
+                                    <span class="emb-chip">Chest Right</span>
+                                    <span class="emb-chip">Back Center</span>
+                                    <span class="emb-chip">Sleeve</span>
+                                </div>
+                            </div>
+                            <div class="customize-preview-row">
+                                <div class="customize-preview-box" id="customizePreview">
+                                    <div class="cp-placeholder"><i class="fas fa-shirt"></i><br>Preview updates here</div>
+                                </div>
+                                <button class="btn btn-primary" id="applyCustomization">
+                                    <i class="fas fa-check"></i> Apply to Mirror
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MIX & MATCH TAB -->
+                    <div id="mix-match" class="tab-pane">
+                        <div class="mix-header-row">
+                            <div>
+                                <h3><i class="fas fa-layer-group"></i> Mix & Match Engine</h3>
+                                <p class="tab-desc">Combine pieces to build complete outfits</p>
+                            </div>
+                            <button class="btn btn-small btn-primary" id="autoMix">
+                                <i class="fas fa-shuffle"></i> Auto Mix
+                            </button>
+                        </div>
+                        <div class="mix-match-container">
+                            <div class="mix-category">
+                                <div class="mix-cat-label"><i class="fas fa-shirt"></i> Tops</div>
+                                <div class="mix-items-grid" id="topsGrid"></div>
+                            </div>
+                            <div class="mix-category">
+                                <div class="mix-cat-label"><i class="fas fa-person-dress"></i> Bottoms</div>
+                                <div class="mix-items-grid" id="bottomsGrid"></div>
+                            </div>
+                            <div class="mix-category">
+                                <div class="mix-cat-label"><i class="fas fa-shoe-prints"></i> Shoes</div>
+                                <div class="mix-items-grid" id="shoesGrid"></div>
+                            </div>
+                            <div class="mix-category">
+                                <div class="mix-cat-label"><i class="fas fa-ring"></i> Accessories</div>
+                                <div class="mix-items-grid" id="accessoriesGrid"></div>
+                            </div>
+                        </div>
+                        <div class="mix-result" id="mixResult" style="display:none;">
+                            <h4><i class="fas fa-sparkles"></i> Your Complete Look</h4>
+                            <div class="mix-result-items" id="mixResultItems"></div>
+                            <button class="btn btn-primary w-full" id="tryMixedOutfit">
+                                <i class="fas fa-camera"></i> Try This Look On
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Bar -->
+                <div class="action-section">
+                    <div class="selected-item-info" id="selectedItemInfo">
+                        <div class="no-selection"><i class="fas fa-hand-pointer"></i> Select an outfit to get started</div>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" id="shareBtn">
+                            <i class="fas fa-share-nodes"></i> Share for Feedback
+                        </button>
+                        <button class="btn btn-success" id="buyBtn">
+                            <i class="fas fa-bag-shopping"></i> Buy Now
+                        </button>
+                    </div>
+                    <div class="bundle-suggestion">
+                        <div class="bundle-left">
+                            <h4><i class="fas fa-gift"></i> Smart Bundle Offer</h4>
+                            <p>Complete this look — Top + Bottom + Shoes + Accessory</p>
+                        </div>
+                        <div class="bundle-right">
+                            <span class="bundle-save">Save 20%</span>
+                            <button class="btn btn-small btn-primary" id="viewBundle">View Bundle</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== SECTION: AI RECOMMENDATIONS ===================== -->
+    <section id="section-recommendations" class="page-section">
+        <div class="section-container">
+            <div class="section-title-row">
+                <div>
+                    <h2><i class="fas fa-wand-magic-sparkles"></i> AI Stylist Studio</h2>
+                    <p>Smart outfit recommendations based on your unique profile</p>
+                </div>
+                <div class="title-chips">
+                    <span class="chip chip-blue"><i class="fas fa-cloud-sun"></i> Sunny, 24°C</span>
+                    <span class="chip chip-green"><i class="fas fa-fire"></i> Summer 2025 Trends</span>
+                </div>
+            </div>
+            <div class="style-quiz-row">
+                <div class="quiz-card">
+                    <h3>Your Style DNA</h3>
+                    <div class="quiz-grid">
+                        <div class="quiz-item">
+                            <label>Occasion</label>
+                            <select class="filter-select">
+                                <option>Casual Day</option><option>Office</option>
+                                <option>Wedding</option><option>Party Night</option><option>Outdoor</option>
+                            </select>
+                        </div>
+                        <div class="quiz-item">
+                            <label>Season</label>
+                            <select class="filter-select">
+                                <option>Summer</option><option>Winter</option><option>Spring</option><option>Fall</option>
+                            </select>
+                        </div>
+                        <div class="quiz-item">
+                            <label>Budget</label>
+                            <select class="filter-select">
+                                <option>Under $50</option><option>$50–$150</option>
+                                <option>$150–$300</option><option>$300+</option>
+                            </select>
+                        </div>
+                        <div class="quiz-item">
+                            <label>Vibe</label>
+                            <select class="filter-select">
+                                <option>Minimalist</option><option>Bold & Colorful</option>
+                                <option>Classic</option><option>Edgy</option><option>Romantic</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-full" id="analyzeStyle">
+                        <i class="fas fa-brain"></i> Analyze & Suggest
+                    </button>
+                </div>
+                <div class="ai-thinking-box" id="aiThinkingBox">
+                    <div class="ai-think-inner">
+                        <div class="ai-brain-anim">
+                            <i class="fas fa-brain"></i>
+                            <div class="brain-rings">
+                                <div class="ring r1"></div>
+                                <div class="ring r2"></div>
+                                <div class="ring r3"></div>
+                            </div>
+                        </div>
+                        <p class="ai-think-text">AI is analyzing your style preferences, body shape, current trends, and weather...</p>
+                        <div class="ai-think-factors">
+                            <div class="think-factor"><i class="fas fa-check-circle"></i> Body shape analyzed</div>
+                            <div class="think-factor"><i class="fas fa-check-circle"></i> Trend database scanned</div>
+                            <div class="think-factor"><i class="fas fa-check-circle"></i> Color palette matched</div>
+                            <div class="think-factor"><i class="fas fa-spinner fa-spin"></i> Generating suggestions...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="rec-section-title">
+                <h3>Top Picks For You <span class="chip chip-blue">Personalized</span></h3>
+            </div>
+            <div class="full-rec-grid" id="fullRecGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===================== SECTION: MANUFACTURER / BRANDS ===================== -->
+    <section id="section-manufacturer" class="page-section">
+        <div class="section-container">
+            <div class="mfg-hero">
+                <div class="mfg-hero-text">
+                    <h2><i class="fas fa-industry"></i> FitVision for Brands & Manufacturers</h2>
+                    <p>Digital prototyping, virtual sampling, and customer approval — before a single stitch is made.</p>
+                    <div class="mfg-stats">
+                        <div class="mfg-stat"><span>-65%</span><p>Return Rate</p></div>
+                        <div class="mfg-stat"><span>-40%</span><p>Production Waste</p></div>
+                        <div class="mfg-stat"><span>3x</span><p>Faster Approvals</p></div>
+                        <div class="mfg-stat"><span>+80%</span><p>Customer Confidence</p></div>
+                    </div>
+                </div>
+                <div class="mfg-hero-visual">
+                    <div class="prototype-demo">
+                        <div class="proto-label"><i class="fas fa-drafting-compass"></i> Digital Prototype</div>
+                        <img src="outfits/business formal.webp" alt="Prototype" class="proto-img">
+                        <div class="proto-status approved"><i class="fas fa-check-circle"></i> Customer Approved</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mfg-features-grid">
+                <div class="mfg-feature-card">
+                    <div class="mfg-icon"><i class="fas fa-drafting-compass"></i></div>
+                    <h4>Digital Prototyping</h4>
+                    <p>Create virtual garment samples with exact measurements, fabrics, and colorways — no physical sample needed for initial approval.</p>
+                    <button class="btn btn-small btn-primary">Start Prototype</button>
+                </div>
+                <div class="mfg-feature-card">
+                    <div class="mfg-icon"><i class="fas fa-users"></i></div>
+                    <h4>Customer Approval Portal</h4>
+                    <p>Share virtual samples directly with customers for instant feedback and approval before entering mass production.</p>
+                    <button class="btn btn-small btn-primary">Open Portal</button>
+                </div>
+                <div class="mfg-feature-card">
+                    <div class="mfg-icon"><i class="fas fa-chart-bar"></i></div>
+                    <h4>Production Analytics</h4>
+                    <p>Track approval rates, revision requests, and customer preferences to optimize designs and reduce costly revisions.</p>
+                    <button class="btn btn-small btn-primary">View Analytics</button>
+                </div>
+                <div class="mfg-feature-card">
+                    <div class="mfg-icon"><i class="fas fa-recycle"></i></div>
+                    <h4>Waste Reduction Engine</h4>
+                    <p>AI predicts demand and optimizes fabric cutting patterns to minimize waste and lower per-unit production cost.</p>
+                    <button class="btn btn-small btn-primary">Explore</button>
+                </div>
+            </div>
+
+            <div class="prototype-workspace">
+                <h3><i class="fas fa-desktop"></i> Virtual Sampling Workspace</h3>
+                <div class="workspace-grid">
+                    <div class="workspace-upload">
+                        <div class="ws-drop-zone" id="wsDropZone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Upload Design Files</p>
+                            <small>SVG, PNG, AI, PDF supported</small>
+                            <button class="btn btn-secondary btn-small" style="margin-top:12px;">Browse Files</button>
+                        </div>
+                    </div>
+                    <div class="workspace-models">
+                        <h4>Preview on Model</h4>
+                        <div class="model-grid">
+                            <div class="model-card active-model">
+                                <img src="outfits/summer casual.jpg" alt="Model 1">
+                                <span>Model A</span>
+                            </div>
+                            <div class="model-card">
+                                <img src="outfits/business formal.webp" alt="Model 2">
+                                <span>Model B</span>
+                            </div>
+                            <div class="model-card">
+                                <img src="outfits/evening gown.jpg" alt="Model 3">
+                                <span>Model C</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="workspace-actions">
+                        <h4>Actions</h4>
+                        <button class="btn btn-primary w-full ws-btn"><i class="fas fa-eye"></i> Preview on Model</button>
+                        <button class="btn btn-secondary w-full ws-btn"><i class="fas fa-share"></i> Send for Approval</button>
+                        <button class="btn btn-secondary w-full ws-btn"><i class="fas fa-copy"></i> Duplicate Design</button>
+                        <button class="btn btn-success w-full ws-btn"><i class="fas fa-industry"></i> Send to Production</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== SECTION: USER PROFILE ===================== -->
+    <section id="section-profile" class="page-section">
+        <div class="section-container">
+            <div class="profile-header">
+                <div class="profile-avatar"><i class="fas fa-user"></i></div>
+                <div class="profile-info">
+                    <h2>My FitVision Profile</h2>
+                    <p>Personalize your experience for smarter AI recommendations</p>
+                    <div class="profile-chips">
+                        <span class="chip chip-purple"><i class="fas fa-crown"></i> Premium Member</span>
+                        <span class="chip chip-green"><i class="fas fa-star"></i> Style Score: 88</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+                <div class="profile-card">
+                    <h3><i class="fas fa-ruler-combined"></i> Body Measurements</h3>
+                    <div class="measurements-grid">
+                        <div class="measure-item"><label>Chest</label><input type="text" value="36 in" class="measure-input"></div>
+                        <div class="measure-item"><label>Waist</label><input type="text" value="28 in" class="measure-input"></div>
+                        <div class="measure-item"><label>Hips</label><input type="text" value="38 in" class="measure-input"></div>
+                        <div class="measure-item"><label>Height</label><input type="text" value="5'6" class="measure-input"></div>
+                        <div class="measure-item"><label>Weight</label><input type="text" value="130 lbs" class="measure-input"></div>
+                        <div class="measure-item"><label>Shoe Size</label><input type="text" value="7 US" class="measure-input"></div>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top:15px;"><i class="fas fa-save"></i> Save Measurements</button>
+                </div>
+
+                <div class="profile-card">
+                    <h3><i class="fas fa-heart"></i> Style Preferences</h3>
+                    <div class="style-prefs">
+                        <div class="pref-item">
+                            <label>Favorite Styles</label>
+                            <div class="pref-tags">
+                                <span class="tag active-tag">Casual</span>
+                                <span class="tag active-tag">Minimalist</span>
+                                <span class="tag">Formal</span>
+                                <span class="tag active-tag">Streetwear</span>
+                                <span class="tag">Bohemian</span>
+                                <span class="tag">Romantic</span>
+                            </div>
+                        </div>
+                        <div class="pref-item">
+                            <label>Favorite Colors</label>
+                            <div class="pref-tags">
+                                <span class="tag active-tag">Black</span>
+                                <span class="tag active-tag">Navy</span>
+                                <span class="tag">White</span>
+                                <span class="tag active-tag">Earth Tones</span>
+                                <span class="tag">Pastels</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top:15px;"><i class="fas fa-save"></i> Save Preferences</button>
+                </div>
+
+                <div class="profile-card">
+                    <h3><i class="fas fa-history"></i> Try-On History</h3>
+                    <div class="history-list" id="historyList">
+                        <div class="history-item">
+                            <img src="outfits/summer casual.jpg" alt="h1">
+                            <div><strong>Summer Casual</strong><p>Score: 92% · Tried 2 days ago</p></div>
+                            <button class="btn btn-small btn-secondary">Try Again</button>
+                        </div>
+                        <div class="history-item">
+                            <img src="outfits/business formal.webp" alt="h2">
+                            <div><strong>Business Formal</strong><p>Score: 87% · Tried 3 days ago</p></div>
+                            <button class="btn btn-small btn-secondary">Try Again</button>
+                        </div>
+                        <div class="history-item">
+                            <img src="outfits/evening gown.jpg" alt="h3">
+                            <div><strong>Evening Gown</strong><p>Score: 95% · Tried 5 days ago</p></div>
+                            <button class="btn btn-small btn-secondary">Try Again</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-card">
+                    <h3><i class="fas fa-bookmark"></i> Saved Outfits</h3>
+                    <div class="saved-grid">
+                        <div class="saved-item">
+                            <img src="outfits/urban street.jpg" alt="saved">
+                            <p>Urban Street</p>
+                            <div class="saved-price">$59.99</div>
+                        </div>
+                        <div class="saved-item">
+                            <img src="outfits/sports outfit.webp" alt="saved">
+                            <p>Sports Active</p>
+                            <div class="saved-price">$69.99</div>
+                        </div>
+                        <div class="saved-item add-more-saved">
+                            <i class="fas fa-plus"></i>
+                            <p>Browse More</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SHARE MODAL ===== -->
+    <div id="shareModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeShare"><i class="fas fa-times"></i></button>
+            <h2><i class="fas fa-share-nodes"></i> Share Your Look</h2>
+            <p class="modal-sub">Get feedback from friends before you buy</p>
+            <div class="share-options">
+                <button class="share-btn"><i class="fab fa-whatsapp"></i><br>WhatsApp</button>
+                <button class="share-btn"><i class="fab fa-instagram"></i><br>Instagram</button>
+                <button class="share-btn"><i class="fas fa-envelope"></i><br>Email</button>
+                <button class="share-btn" id="copyLinkBtn"><i class="fas fa-link"></i><br>Copy Link</button>
+            </div>
+            <div class="share-preview-box">
+                <p class="share-preview-label">Preview</p>
+                <img src="outfits/summer casual.jpg" alt="Share Preview" id="sharePreviewImg">
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PURCHASE MODAL ===== -->
+    <div id="purchaseModal" class="modal">
+        <div class="modal-content purchase-modal">
+            <button class="modal-close" id="closePurchase"><i class="fas fa-times"></i></button>
+            <h2><i class="fas fa-bag-shopping"></i> Complete Purchase</h2>
+            <p class="modal-sub">Fast, secure checkout</p>
+            <div class="purchase-layout">
+                <div class="purchase-item-preview">
+                    <img src="outfits/summer casual.jpg" alt="Item" id="purchaseItemImg">
+                    <div class="item-meta">
+                        <h4 id="purchaseItemName">Summer Casual</h4>
+                        <div class="purchase-price" id="purchaseItemPrice">$49.99</div>
+                        <div class="item-meta-tags">
+                            <span class="chip chip-purple">Size: M</span>
+                            <span class="chip chip-blue">Color: Black</span>
+                        </div>
+                        <div class="ai-score-mini">
+                            <i class="fas fa-star"></i> AI Score: 88/100
+                        </div>
+                    </div>
+                </div>
+                <div class="purchase-form">
+                    <input type="text" placeholder="Full Name" class="form-input">
+                    <input type="email" placeholder="Email Address" class="form-input">
+                    <input type="text" placeholder="Delivery Address" class="form-input">
+                    <input type="text" placeholder="Card Number" class="form-input">
+                    <div class="form-row">
+                        <input type="text" placeholder="MM/YY" class="form-input">
+                        <input type="text" placeholder="CVV" class="form-input">
+                    </div>
+                    <label class="checkbox-label">
+                        <input type="checkbox" checked> I agree to Terms & Conditions
+                    </label>
+                    <button class="btn btn-success w-full" id="completePurchase">
+                        <i class="fas fa-credit-card"></i> Complete Purchase
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== COMPARE MODAL ===== -->
+    <div id="compareModal" class="modal">
+        <div class="modal-content compare-modal">
+            <button class="modal-close" id="closeCompare"><i class="fas fa-times"></i></button>
+            <h2><i class="fas fa-code-compare"></i> Side-by-Side Comparison</h2>
+            <p class="modal-sub">Compare two outfits to find your best match</p>
+            <div class="compare-grid">
+                <div class="compare-item">
+                    <div class="compare-badge">Look A</div>
+                    <img src="outfits/summer casual.jpg" alt="A">
+                    <h4>Summer Casual</h4>
+                    <div class="compare-scores">
+                        <div class="cs-row"><span>Fit</span><div class="mini-bar"><div style="width:85%"></div></div><span>85%</span></div>
+                        <div class="cs-row"><span>Trend</span><div class="mini-bar"><div style="width:92%"></div></div><span>92%</span></div>
+                        <div class="cs-row"><span>Style</span><div class="mini-bar"><div style="width:88%"></div></div><span>88%</span></div>
+                    </div>
+                    <div class="compare-total winner">Overall: 88 ⭐</div>
+                </div>
+                <div class="compare-vs">VS</div>
+                <div class="compare-item">
+                    <div class="compare-badge">Look B</div>
+                    <img src="outfits/urban street.jpg" alt="B">
+                    <h4>Urban Street</h4>
+                    <div class="compare-scores">
+                        <div class="cs-row"><span>Fit</span><div class="mini-bar"><div style="width:78%"></div></div><span>78%</span></div>
+                        <div class="cs-row"><span>Trend</span><div class="mini-bar"><div style="width:85%"></div></div><span>85%</span></div>
+                        <div class="cs-row"><span>Style</span><div class="mini-bar"><div style="width:82%"></div></div><span>82%</span></div>
+                    </div>
+                    <div class="compare-total">Overall: 82</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== BUNDLE MODAL ===== -->
+    <div id="bundleModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeBundle"><i class="fas fa-times"></i></button>
+            <h2><i class="fas fa-gift"></i> Smart Bundle</h2>
+            <p class="modal-sub">Complete outfit curated by AI — Save 20%</p>
+            <div class="bundle-items">
+                <div class="bundle-item">
+                    <img src="outfits/summer casual.jpg" alt="">
+                    <div><strong>Summer Casual</strong><span>$49.99</span></div>
+                </div>
+                <div class="bundle-item">
+                    <img src="outfits/urban street.jpg" alt="">
+                    <div><strong>Urban Street</strong><span>$59.99</span></div>
+                </div>
+                <div class="bundle-item">
+                    <img src="outfits/sports outfit.webp" alt="">
+                    <div><strong>Sports Active</strong><span>$69.99</span></div>
+                </div>
+                <div class="bundle-item">
+                    <img src="outfits/casual weekend.jpg" alt="">
+                    <div><strong>Casual Weekend</strong><span>$54.99</span></div>
+                </div>
+            </div>
+            <div class="bundle-total">
+                <span class="original-price">Total: $184.96</span>
+                <span class="discounted-price">Bundle: $147.97</span>
+                <span class="savings-chip">You Save $36.99!</span>
+            </div>
+            <button class="btn btn-success w-full" style="margin-top:15px;">
+                <i class="fas fa-bag-shopping"></i> Buy Complete Bundle
+            </button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 FitVision AI — AI-Powered Fashion Intelligence Platform | Privacy Policy | Terms of Service</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
