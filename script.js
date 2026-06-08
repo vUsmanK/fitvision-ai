@@ -3,46 +3,46 @@
 const FALLBACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='350'%3E%3Crect fill='%23eef2ff' width='280' height='350'/%3E%3Ctext x='50%25' y='45%25' text-anchor='middle' font-size='52' font-family='Arial'%3E%F0%9F%91%95%3C/text%3E%3Ctext x='50%25' y='63%25' text-anchor='middle' font-size='13' fill='%236366f1' font-family='Arial' font-weight='bold'%3EOutfit Preview%3C/text%3E%3C/svg%3E";
 
 const outfits = [
-    { id: 1, name: "Summer Casual",   price: "$49.99",  image: "outfits/summer casual.jpg",      category: "casual",  season: "summer", scores: { fit: 85, trend: 92, style: 88, occasion: 90 } },
-    { id: 2, name: "Urban Street",    price: "$59.99",  image: "outfits/urban street.jpg",       category: "casual",  season: "spring", scores: { fit: 78, trend: 85, style: 82, occasion: 80 } },
-    { id: 3, name: "Business Formal", price: "$99.99",  image: "outfits/business formal.webp",   category: "formal",  season: "spring", scores: { fit: 90, trend: 75, style: 88, occasion: 95 } },
-    { id: 4, name: "Evening Gown",    price: "$149.99", image: "outfits/evening gown.jpg",       category: "formal",  season: "spring", scores: { fit: 95, trend: 88, style: 96, occasion: 98 } },
-    { id: 5, name: "Sports Active",   price: "$69.99",  image: "outfits/sports outfit.webp",     category: "sports",  season: "summer", scores: { fit: 88, trend: 80, style: 82, occasion: 75 } },
-    { id: 6, name: "Party Night",     price: "$89.99",  image: "outfits/party night.jpg",        category: "party",   season: "summer", scores: { fit: 86, trend: 94, style: 91, occasion: 96 } },
-    { id: 7, name: "Casual Weekend",  price: "$54.99",  image: "outfits/casual weekend.jpg",     category: "casual",  season: "summer", scores: { fit: 80, trend: 78, style: 82, occasion: 85 } },
-    { id: 8, name: "Elegant Dinner",  price: "$129.99", image: "outfits/elegant dinner.jpg",     category: "formal",  season: "winter", scores: { fit: 92, trend: 85, style: 93, occasion: 97 } },
+    { id: 1, name: "Summer Casual",   price: "$49.99",  image: "outfits/summer-casual.jpg",      category: "casual",  season: "summer", scores: { fit: 85, trend: 92, style: 88, occasion: 90 } },
+    { id: 2, name: "Urban Street",    price: "$59.99",  image: "outfits/urban-street.jpg",       category: "casual",  season: "spring", scores: { fit: 78, trend: 85, style: 82, occasion: 80 } },
+    { id: 3, name: "Business Formal", price: "$99.99",  image: "outfits/business-formal.webp",   category: "formal",  season: "spring", scores: { fit: 90, trend: 75, style: 88, occasion: 95 } },
+    { id: 4, name: "Evening Gown",    price: "$149.99", image: "outfits/evening-gown.jpg",       category: "formal",  season: "spring", scores: { fit: 95, trend: 88, style: 96, occasion: 98 } },
+    { id: 5, name: "Sports Active",   price: "$69.99",  image: "outfits/sports-outfit.webp",     category: "sports",  season: "summer", scores: { fit: 88, trend: 80, style: 82, occasion: 75 } },
+    { id: 6, name: "Party Night",     price: "$89.99",  image: "outfits/party-night.jpg",        category: "party",   season: "summer", scores: { fit: 86, trend: 94, style: 91, occasion: 96 } },
+    { id: 7, name: "Casual Weekend",  price: "$54.99",  image: "outfits/casual-weekend.jpg",     category: "casual",  season: "summer", scores: { fit: 80, trend: 78, style: 82, occasion: 85 } },
+    { id: 8, name: "Elegant Dinner",  price: "$129.99", image: "outfits/elegant-dinner.jpg",     category: "formal",  season: "winter", scores: { fit: 92, trend: 85, style: 93, occasion: 97 } },
 ];
 
 const recommendations = [
-    { name: "Casual Summer", price: "$49.99",  image: "outfits/summer casual.jpg",    badge: "Top Pick", score: 92, desc: "☀️ Beach outings & casual days" },
-    { name: "Urban Style",   price: "$59.99",  image: "outfits/urban street.jpg",     badge: "Trending", score: 89, desc: "🏙️ City vibes & everyday wear" },
-    { name: "Elegant Night", price: "$149.99", image: "outfits/evening gown.jpg",     badge: "Premium",  score: 95, desc: "✨ Special occasions & evenings" },
+    { name: "Casual Summer", price: "$49.99",  image: "outfits/summer-casual.jpg",    badge: "Top Pick", score: 92, desc: "☀️ Beach outings & casual days" },
+    { name: "Urban Style",   price: "$59.99",  image: "outfits/urban-street.jpg",     badge: "Trending", score: 89, desc: "🏙️ City vibes & everyday wear" },
+    { name: "Elegant Night", price: "$149.99", image: "outfits/evening-gown.jpg",     badge: "Premium",  score: 95, desc: "✨ Special occasions & evenings" },
 ];
 
 const mixItems = {
     tops: [
-        { name: "Summer Casual",   img: "outfits/summer casual.jpg" },
-        { name: "Casual Weekend",  img: "outfits/casual weekend.jpg" },
-        { name: "Urban Street",    img: "outfits/urban street.jpg" },
-        { name: "Business Formal", img: "outfits/business formal.webp" },
+        { name: "Summer Casual",   img: "outfits/summer-casual.jpg" },
+        { name: "Casual Weekend",  img: "outfits/casual-weekend.jpg" },
+        { name: "Urban Street",    img: "outfits/urban-street.jpg" },
+        { name: "Business Formal", img: "outfits/business-formal.webp" },
     ],
     bottoms: [
-        { name: "Urban Street",    img: "outfits/urban street.jpg" },
-        { name: "Sports Active",   img: "outfits/sports outfit.webp" },
-        { name: "Casual Weekend",  img: "outfits/casual weekend.jpg" },
-        { name: "Elegant Dinner",  img: "outfits/elegant dinner.jpg" },
+        { name: "Urban Street",    img: "outfits/urban-street.jpg" },
+        { name: "Sports Active",   img: "outfits/sports-outfit.webp" },
+        { name: "Casual Weekend",  img: "outfits/casual-weekend.jpg" },
+        { name: "Elegant Dinner",  img: "outfits/elegant-dinner.jpg" },
     ],
     shoes: [
-        { name: "Sports Active",   img: "outfits/sports outfit.webp" },
-        { name: "Evening Gown",    img: "outfits/evening gown.jpg" },
-        { name: "Business Formal", img: "outfits/business formal.webp" },
-        { name: "Party Night",     img: "outfits/party night.jpg" },
+        { name: "Sports Active",   img: "outfits/sports-outfit.webp" },
+        { name: "Evening Gown",    img: "outfits/evening-gown.jpg" },
+        { name: "Business Formal", img: "outfits/business-formal.webp" },
+        { name: "Party Night",     img: "outfits/party-night.jpg" },
     ],
     accessories: [
-        { name: "Party Night",     img: "outfits/party night.jpg" },
-        { name: "Evening Gown",    img: "outfits/evening gown.jpg" },
-        { name: "Elegant Dinner",  img: "outfits/elegant dinner.jpg" },
-        { name: "Summer Casual",   img: "outfits/summer casual.jpg" },
+        { name: "Party Night",     img: "outfits/party-night.jpg" },
+        { name: "Evening Gown",    img: "outfits/evening-gown.jpg" },
+        { name: "Elegant Dinner",  img: "outfits/elegant-dinner.jpg" },
+        { name: "Summer Casual",   img: "outfits/summer-casual.jpg" },
     ],
 };
 
